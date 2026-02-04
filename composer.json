@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "mecxer713/wialon-package",
   "description": "Laravel and Symfony SDK for the Wialon (Gurtam) API: auto authentication, facade, simplified calls, and local SSL handling.",
   "type": "library",
