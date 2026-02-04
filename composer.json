@@ -1,6 +1,6 @@
 ﻿{
   "name": "mecxer713/wialon-package",
-  "description": "package destiné à Laravel pour Wialon SDK",
+  "description": "SDK Laravel pour l'API Wialon (Gurtam) : authentification automatique, façade, appels simplifiés et gestion SSL locale.",
   "type": "library",
   "license": "MIT",
   "autoload": {
