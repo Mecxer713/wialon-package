@@ -1,4 +1,4 @@
-﻿# Wialon SDK for Laravel
+﻿# Wialon SDK for Laravel and Symfony
 
 [![Latest Stable Version](https://poser.pugx.org/mecxer713/wialon-package/v/stable)](https://packagist.org/packages/mecxer713/wialon-package)
 [![License](https://poser.pugx.org/mecxer713/wialon-package/license)](https://packagist.org/packages/mecxer713/wialon-package)
@@ -147,13 +147,6 @@ vendor/bin/phpunit
 
 - **GET vs POST**  
   Par défaut, la méthode est `POST`. Tu peux forcer `GET` via `Wialon::call(..., 'GET')`.
-
-## Publication
-
-1. Nettoyez le repo (ne pas versionner `vendor/`, `.testbench/`, `.phpunit.result.cache`).
-2. Poussez sur GitHub.
-3. Créez un tag `vX.Y.Z`.
-4. Soumettez l'URL GitHub sur Packagist.
 
 ## Licence
 
