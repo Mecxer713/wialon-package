@@ -4,27 +4,27 @@
 [![License](https://poser.pugx.org/mecxer713/wialon-package/license)](https://packagist.org/packages/mecxer713/wialon-package)
 [![Tests](https://github.com/mecxer713/wialon-package/actions/workflows/tests.yml/badge.svg)](https://github.com/mecxer713/wialon-package/actions/workflows/tests.yml)
 
-Un SDK Laravel et Symfony pour intégrer l'API Wialon (Gurtam). Il gère l'authentification automatique (Session ID), simplifie les appels API, et propose une gestion pratique des certificats SSL en local (Windows/Laragon).
+A Laravel & Symfony SDK to integrate the Wialon (Gurtam) API. It handles automatic authentication (Session ID), simplifies API calls, and provides practical SSL handling for local environments.
 
-Compatible avec **Laravel 10, 11 et 12**.
+Compatible with **Laravel 10, 11 and 12**.
 
-## Fonctionnalités
+## Features
 
-- **Authentification auto** : gestion transparente du `sid` (Session ID).
-- **Façade Laravel** : syntaxe élégante `Wialon::call()` / `Wialon::getUnits()`.
-- **Gestion SSL** : téléchargement et configuration automatique des certificats CA via une commande Artisan.
-- **Helpers** : méthodes pratiques (unités, login, etc.).
-- **Support GET / POST** : appels API configurables par méthode.
+- **Auto authentication**: transparent `sid` (Session ID) handling.
+- **Laravel Facade**: clean syntax `Wialon::call()` / `Wialon::getUnits()`.
+- **SSL handling**: automatic CA certificate download via an Artisan command.
+- **Helpers**: convenience methods (units, login, etc.).
+- **GET / POST support**: configurable API method.
 
 ## Installation
 
-Installez le package via Composer :
+Install via Composer:
 
 ```bash
 composer require mecxer713/wialon-package
 ```
 
-Publiez la configuration (optionnel) :
+Publish config (optional):
 
 ```bash
 php artisan vendor:publish --tag=wialon-config
@@ -32,7 +32,7 @@ php artisan vendor:publish --tag=wialon-config
 
 ## Configuration
 
-Dans votre `.env` :
+In your `.env`:
 
 ```env
 WIALON_TOKEN=your_token_here
@@ -40,17 +40,17 @@ WIALON_BASE_URL=https://hst-api.wialon.com/wialon/ajax.html
 WIALON_DEFAULT_METHOD=POST
 ```
 
-Le fichier de config publié est `config/wialon.php`.
+The published config file is `config/wialon.php`.
 
-## Utilisation rapide
+## Quick Usage
 
 ```php
 use Mecxer\WialonPackage\Facades\Wialon;
 
-// Login automatique si nécessaire
+// Auto login if needed
 Wialon::login();
 
-// Appel générique
+// Generic call
 $result = Wialon::call('core/search_items', [
     'spec' => [
         'itemsType' => 'avl_unit',
@@ -68,23 +68,23 @@ $result = Wialon::call('core/search_items', [
 $units = Wialon::getUnits();
 ```
 
-## Appels GET / POST
+## GET / POST Calls
 
-Par défaut, la méthode est `POST` (configurable via `WIALON_DEFAULT_METHOD`).
+Default method is `POST` (configurable via `WIALON_DEFAULT_METHOD`).
 
 ```php
-// POST (recommandé)
+// POST (recommended)
 Wialon::call('core/search_items', [...], 'POST');
 Wialon::callPost('core/search_items', [...]);
 
-// GET (si besoin)
+// GET (if needed)
 Wialon::call('core/get_statistics', [...], 'GET');
 Wialon::callGet('core/get_statistics', [...]);
 ```
 
-## Options Guzzle
+## Guzzle Options
 
-Vous pouvez surcharger les options HTTP via `config/wialon.php` :
+You can override HTTP options in `config/wialon.php`:
 
 ```php
 'guzzle' => [
@@ -94,7 +94,7 @@ Vous pouvez surcharger les options HTTP via `config/wialon.php` :
 ],
 ```
 
-## Injection du client (non-statique)
+## Client Injection (non-static)
 
 ```php
 use Mecxer\WialonPackage\WialonClient;
@@ -104,30 +104,30 @@ public function __construct(private WialonClient $wialon)
 }
 ```
 
-## Gestion SSL
+## SSL Handling
 
-### Commande de diagnostic
+### Diagnostic Command
 
 ```bash
 php artisan wialon:check --download
 ```
 
-Cette commande télécharge le certificat officiel (si nécessaire) et teste la connexion à l'API.  
-Le certificat est stocké dans `storage/certif/cacert.pem`.
+This command downloads the official certificate (if needed) and tests the API connection.  
+The certificate is stored in `storage/certif/cacert.pem`.
 
-### Configuration manuelle
+### Manual Configuration
 
 ```php
 Wialon::setVerifyPath(storage_path('certif/cacert.pem'));
 ```
 
-## Gestion des erreurs
+## Error Handling
 
 ```php
 try {
     $data = Wialon::call('core/search_items', [...], 'POST');
 } catch (\RuntimeException $e) {
-    // Gérer l'erreur API ou HTTP
+    // Handle API or HTTP errors
 }
 ```
 
@@ -139,15 +139,22 @@ vendor/bin/phpunit
 
 ## FAQ
 
-- **Erreur SSL (cURL error 77 / certificate)**  
-  Lance `php artisan wialon:check --download`, puis vérifie que `storage/certif/cacert.pem` existe.
+- **SSL error (cURL error 77 / certificate)**  
+  Run `php artisan wialon:check --download`, then confirm `storage/certif/cacert.pem` exists.
 
-- **Erreur d’accès / permissions Wialon**  
-  Vérifie que ton token a les droits nécessaires pour le service `svc` appelé.
+- **Access / permission errors**  
+  Make sure your token has the required rights for the called `svc`.
 
 - **GET vs POST**  
-  Par défaut, la méthode est `POST`. Tu peux forcer `GET` via `Wialon::call(..., 'GET')`.
+  Default method is `POST`. You can force `GET` via `Wialon::call(..., 'GET')`.
 
-## Licence
+## Publishing
+
+1. Clean the repo (do not commit `vendor/`, `.testbench/`, `.phpunit.result.cache`).
+2. Push to GitHub.
+3. Create a `vX.Y.Z` tag.
+4. Submit the GitHub URL on Packagist.
+
+## License
 
 MIT
