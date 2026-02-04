@@ -37,7 +37,8 @@ class WialonServiceProvider extends ServiceProvider
             return new WialonClient(
                 $app['config']->get('wialon.token'),
                 $app['config']->get('wialon.base_url'),
-                $app['config']->get('wialon.guzzle', [])
+                $app['config']->get('wialon.guzzle', []),
+                $app['config']->get('wialon.default_method', 'POST')
             );
         });
 

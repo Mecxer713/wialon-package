@@ -11,6 +11,7 @@ class WialonClient
     protected string $token;
     protected string $baseUrl;
     protected array $guzzleOptions = [];
+    protected string $defaultMethod = 'POST';
     protected ?string $sessionId = null;
 
     /**
@@ -19,12 +20,14 @@ class WialonClient
     public function __construct(
         string $token,
         string $baseUrl = 'https://hst-api.wialon.com/wialon/ajax.html',
-        array $guzzleOptions = []
+        array $guzzleOptions = [],
+        string $defaultMethod = 'POST'
     )
     {
         $this->token = $token;
         $this->baseUrl = $baseUrl;
         $this->guzzleOptions = $guzzleOptions;
+        $this->defaultMethod = strtoupper($defaultMethod);
 
         // Initialisation du client (tente de détecter le certif automatiquement)
         $this->initClient();
@@ -79,7 +82,7 @@ class WialonClient
 
         $response = $this->request('token/login', [
             'token' => $this->token
-        ]);
+        ], 'POST');
 
         if (isset($response['eid'])) {
             $this->sessionId = $response['eid'];
@@ -93,37 +96,58 @@ class WialonClient
     /**
      * Appel générique à l'API Wialon.
      */
-    public function call(string $svc, array $params = []): array
+    public function call(string $svc, array $params = [], ?string $method = null): array
     {
         if (!$this->sessionId && $svc !== 'token/login') {
             $this->login();
         }
 
-        return $this->request($svc, $params);
+        $method = $method ?: $this->defaultMethod;
+
+        return $this->request($svc, $params, $method);
+    }
+
+    public function callPost(string $svc, array $params = []): array
+    {
+        return $this->call($svc, $params, 'POST');
+    }
+
+    public function callGet(string $svc, array $params = []): array
+    {
+        return $this->call($svc, $params, 'GET');
     }
 
     /**
      * Wrapper interne Guzzle.
      */
-    protected function request(string $svc, array $params): array
+    protected function request(string $svc, array $params, string $method = 'POST'): array
     {
+        $method = strtoupper($method);
+        if (!in_array($method, ['GET', 'POST'], true)) {
+            throw new \InvalidArgumentException("Méthode HTTP non supportée : {$method}. Utilisez GET ou POST.");
+        }
+
         try {
             $encodedParams = json_encode($params, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new \RuntimeException('Paramètres JSON invalides pour Wialon.', 0, $e);
         }
 
-        $queryParams = [
+        $payload = [
             'svc' => $svc,
             'params' => $encodedParams,
         ];
 
         if ($this->sessionId) {
-            $queryParams['sid'] = $this->sessionId;
+            $payload['sid'] = $this->sessionId;
         }
 
         try {
-            $response = $this->httpClient->get('', ['query' => $queryParams]);
+            $options = $method === 'GET'
+                ? ['query' => $payload]
+                : ['form_params' => $payload];
+
+            $response = $this->httpClient->request($method, '', $options);
             $rawBody = (string) $response->getBody();
 
             try {

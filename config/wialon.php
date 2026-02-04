@@ -22,6 +22,17 @@ return [
     |
     */
     'base_url' => env('WIALON_BASE_URL', 'https://hst-api.wialon.com/wialon/ajax.html'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP Method par défaut
+    |--------------------------------------------------------------------------
+    |
+    | Méthode HTTP utilisée par défaut pour les appels API.
+    | La majorité des services Wialon acceptent POST.
+    |
+    */
+    'default_method' => env('WIALON_DEFAULT_METHOD', 'POST'),
     
     /*
     |--------------------------------------------------------------------------
