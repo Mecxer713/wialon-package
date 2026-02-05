@@ -1,38 +1,150 @@
-﻿# Wialon SDK for Laravel and Symfony
+﻿# Wialon SDK for Laravel & Symfony
 
-[![Latest Stable Version](https://poser.pugx.org/mecxer713/wialon-package/v/stable)](https://packagist.org/packages/mecxer713/wialon-package)
-[![License](https://poser.pugx.org/mecxer713/wialon-package/license)](https://packagist.org/packages/mecxer713/wialon-package)
-[![Tests](https://github.com/mecxer713/wialon-package/actions/workflows/tests.yml/badge.svg)](https://github.com/mecxer713/wialon-package/actions/workflows/tests.yml)
+> A production-ready, framework-agnostic SDK with native integrations for Laravel and Symfony.
 
-A Laravel & Symfony SDK to integrate the Wialon (Gurtam) API. It handles automatic authentication (Session ID), simplifies API calls, and provides practical SSL handling for local environments.
+---
 
-Compatible with **Laravel 10, 11 and 12**.
+## 📚 Table of Contents
 
-## Features
+- [Wialon SDK for Laravel \& Symfony](#wialon-sdk-for-laravel--symfony)
+  - [📚 Table of Contents](#-table-of-contents)
+  - [Overview](#overview)
+  - [✨ Key Highlights](#-key-highlights)
+  - [📦 Package Identity](#-package-identity)
+  - [🏗 Architecture Overview](#-architecture-overview)
+    - [1️⃣ Core Layer (Framework-Agnostic)](#1️⃣-core-layer-framework-agnostic)
+    - [2️⃣ Laravel Integration Layer](#2️⃣-laravel-integration-layer)
+    - [3️⃣ Symfony Integration Layer](#3️⃣-symfony-integration-layer)
+  - [📥 Installation](#-installation)
+    - [Laravel](#laravel)
+    - [Symfony](#symfony)
+  - [⚙️ Configuration](#️-configuration)
+    - [Environment variables](#environment-variables)
+  - [🚀 Quick Usage](#-quick-usage)
+    - [Laravel (Facade)](#laravel-facade)
+    - [Symfony (Dependency Injection)](#symfony-dependency-injection)
+  - [🌐 Generic API Calls](#-generic-api-calls)
+  - [🔁 GET vs POST](#-get-vs-post)
+  - [🔐 SSL \& Certificate Handling (Killer Feature)](#-ssl--certificate-handling-killer-feature)
+    - [Automatic Fix](#automatic-fix)
+  - [🧪 Error Handling](#-error-handling)
+  - [✅ Tests](#-tests)
+  - [📌 Why This Package?](#-why-this-package)
+  - [📜 License](#-license)
 
-- **Auto authentication**: transparent `sid` (Session ID) handling.
-- **Laravel Facade**: clean syntax `Wialon::call()` / `Wialon::getUnits()`.
-- **SSL handling**: automatic CA certificate download via an Artisan command.
-- **Helpers**: convenience methods (units, login, etc.).
-- **GET / POST support**: configurable API method.
+---
 
-## Installation
+## Overview
 
-Install via Composer:
+**Wialon SDK for Laravel & Symfony** is a hybrid PHP SDK designed to integrate the **Wialon (Gurtam) API** into modern PHP applications.
+
+It provides a **clean PHP core** with **first-class framework integrations**, focusing on reliability, developer experience, and real-world production constraints (authentication & SSL issues).
+
+---
+
+## ✨ Key Highlights
+
+* 🔐 **Zero-config authentication**: automatic session (`sid`) lifecycle management
+* 🧠 **Pure PHP core**: reusable, testable, framework-independent logic
+* 🧩 **Native integrations**:
+
+  * Laravel Facade & Artisan command
+  * Symfony Bundle, DI & Console command
+* 🛠 **Built-in SSL fixer**: automatic CA certificate download (cURL 60/77)
+* 🚀 **Developer Experience (DX) focused**
+
+---
+
+## 📦 Package Identity
+
+* **Name**: `mecxer713/wialon-package`
+* **Type**: Hybrid SDK (Laravel & Symfony)
+* **Core dependencies**:
+
+  * `guzzlehttp/guzzle`
+  * `illuminate/support` (Laravel)
+  * `symfony/http-kernel` (Symfony)
+* **Compatibility**:
+
+  * Laravel **10, 11, 12**
+  * Symfony **6, 7**
+
+---
+
+## 🏗 Architecture Overview
+
+This SDK follows a clean layered architecture.
+
+### 1️⃣ Core Layer (Framework-Agnostic)
+
+📄 `src/WialonClient.php`
+
+Responsibilities:
+
+* HTTP communication with Wialon API (via Guzzle)
+* Automatic login & session (`sid`) renewal
+* Unified GET / POST handling
+* SSL certificate resolution (cURL 60 / 77)
+
+➡️ This layer contains **all business logic** and has **no framework dependency**.
+
+---
+
+### 2️⃣ Laravel Integration Layer
+
+Designed to feel 100% native to Laravel developers.
+
+Components:
+
+* `WialonServiceProvider` – container binding & config publishing
+* `Facades/Wialon.php` – static access (`Wialon::call()`)
+* `Commands/TestWialonConnection.php` – Artisan diagnostic command
+* `config/wialon.php` – Laravel configuration
+
+---
+
+### 3️⃣ Symfony Integration Layer
+
+Delivered as a standard Symfony Bundle.
+
+Components:
+
+* `WialonBundle.php` – bundle entry point
+* `DependencyInjection/WialonExtension.php` – service injection
+* `DependencyInjection/Configuration.php` – YAML config validation
+* `Commands/WialonCheckCommand.php` – Console diagnostic command
+
+
+
+
+---
+
+## 📥 Installation
 
 ```bash
 composer require mecxer713/wialon-package
 ```
 
-Publish config (optional):
+### Laravel
 
 ```bash
 php artisan vendor:publish --tag=wialon-config
 ```
 
-## Configuration
+### Symfony
 
-In your `.env`:
+Enable the bundle (if not using Flex auto-discovery):
+
+```php
+// config/bundles.php
+Mecxer\WialonPackage\WialonBundle::class => ['all' => true],
+```
+
+---
+
+## ⚙️ Configuration
+
+### Environment variables
 
 ```env
 WIALON_TOKEN=your_token_here
@@ -40,121 +152,119 @@ WIALON_BASE_URL=https://hst-api.wialon.com/wialon/ajax.html
 WIALON_DEFAULT_METHOD=POST
 ```
 
-The published config file is `config/wialon.php`.
+* Laravel: `config/wialon.php`
+* Symfony: `config/packages/wialon.yaml`
 
-## Quick Usage
+---
+
+## 🚀 Quick Usage
+
+### Laravel (Facade)
 
 ```php
 use Mecxer\WialonPackage\Facades\Wialon;
 
-// Auto login if needed
 Wialon::login();
 
-// Generic call
-$result = Wialon::call('core/search_items', [
-    'spec' => [
-        'itemsType' => 'avl_unit',
-        'propName'  => 'sys_name',
-        'propValueMask' => '*',
-        'sortType'  => 'sys_name'
-    ],
-    'force' => 1,
-    'flags' => 1,
-    'from'  => 0,
-    'to'    => 0
-]);
-
-// Helper
 $units = Wialon::getUnits();
 ```
 
-## GET / POST Calls
-
-Default method is `POST` (configurable via `WIALON_DEFAULT_METHOD`).
-
-```php
-// POST (recommended)
-Wialon::call('core/search_items', [...], 'POST');
-Wialon::callPost('core/search_items', [...]);
-
-// GET (if needed)
-Wialon::call('core/get_statistics', [...], 'GET');
-Wialon::callGet('core/get_statistics', [...]);
-```
-
-## Guzzle Options
-
-You can override HTTP options in `config/wialon.php`:
-
-```php
-'guzzle' => [
-    'timeout' => 30,
-    'verify' => storage_path('certif/cacert.pem'),
-    // 'proxy' => 'http://user:pass@proxy:8080',
-],
-```
-
-## Client Injection (non-static)
+### Symfony (Dependency Injection)
 
 ```php
 use Mecxer\WialonPackage\WialonClient;
 
-public function __construct(private WialonClient $wialon)
+public function index(WialonClient $wialon)
 {
+    $units = $wialon->getUnits();
 }
 ```
 
-## SSL Handling
+---
 
-### Diagnostic Command
+## 🌐 Generic API Calls
+
+```php
+Wialon::call('core/search_items', [
+    'spec' => [
+        'itemsType' => 'avl_unit',
+        'propName' => 'sys_name',
+        'propValueMask' => '*',
+        'sortType' => 'sys_name'
+    ],
+    'force' => 1,
+    'flags' => 1,
+    'from' => 0,
+    'to' => 0
+]);
+```
+
+---
+
+## 🔁 GET vs POST
+
+```php
+// POST (default & recommended)
+Wialon::callPost('core/search_items', [...]);
+
+// GET (optional)
+Wialon::callGet('core/get_statistics', [...]);
+```
+
+---
+
+## 🔐 SSL & Certificate Handling (Killer Feature)
+
+### Automatic Fix
 
 ```bash
 php artisan wialon:check --download
+# or
+php bin/console wialon:check --download
 ```
 
-This command downloads the official certificate (if needed) and tests the API connection.  
-The certificate is stored in `storage/certif/cacert.pem`.
+✔ Downloads a valid Mozilla CA bundle
+✔ Fixes cURL error 60 / 77 (Windows)
+✔ Tests API connectivity
 
-### Manual Configuration
+Certificate location:
 
-```php
-Wialon::setVerifyPath(storage_path('certif/cacert.pem'));
+```
+storage/certif/cacert.pem
 ```
 
-## Error Handling
+---
+
+## 🧪 Error Handling
 
 ```php
 try {
-    $data = Wialon::call('core/search_items', [...], 'POST');
+    $data = Wialon::getUnits();
 } catch (\RuntimeException $e) {
-    // Handle API or HTTP errors
+    // Handle HTTP or API errors
 }
 ```
 
-## Tests
+---
+
+## ✅ Tests
 
 ```bash
 vendor/bin/phpunit
 ```
 
-## FAQ
+---
 
-- **SSL error (cURL error 77 / certificate)**  
-  Run `php artisan wialon:check --download`, then confirm `storage/certif/cacert.pem` exists.
+## 📌 Why This Package?
 
-- **Access / permission errors**  
-  Make sure your token has the required rights for the called `svc`.
+✔ One SDK for **Laravel & Symfony**
+✔ No SID headaches
+✔ No SSL headaches
+✔ Clean architecture
+✔ Production-ready
 
-- **GET vs POST**  
-  Default method is `POST`. You can force `GET` via `Wialon::call(..., 'GET')`.
+---
 
-## Publishing
-
-1. Clean the repo (do not commit `vendor/`, `.testbench/`, `.phpunit.result.cache`).
-2. Push to GitHub.
-3. Create a `vX.Y.Z` tag.
-4. Submit the GitHub URL on Packagist.
-
-## License
+## 📜 License
 
 MIT

@@ -2,4 +2,4 @@ services:
     Mecxer\WialonPackage\WialonClient:
         arguments:
             $token: '%env(WIALON_TOKEN)%'
-            $baseUrl: 'https://hst-api.wialon.com/wialon/ajax.html'
+            $base_url: 'https://hst-api.wialon.com/wialon/ajax.html'

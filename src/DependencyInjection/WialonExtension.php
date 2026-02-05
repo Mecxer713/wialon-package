@@ -3,6 +3,7 @@
 namespace Mecxer\WialonPackage\DependencyInjection;
 
 use Mecxer\WialonPackage\WialonClient;
+use Mecxer\WialonPackage\Commands\WialonCheckCommand; // <--- Import de la commande
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -11,24 +12,24 @@ class WialonExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
-        // 1. Charger la configuration définie dans Configuration.php
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        // 2. Créer la définition du service WialonClient
-        $definition = new Definition(WialonClient::class, [
+        // 1. Enregistrement du Client (Déjà fait)
+        $clientDef = new Definition(WialonClient::class, [
             '$token' => $config['token'],
-            '$base_url' => $config['base_url']
+            '$baseUrl' => $config['base_url']
         ]);
-
-        // 3. Rendre le service public et autowirable
-        $definition->setPublic(true);
-        $definition->setAutowired(true);
-
-        // 4. Enregistrer le service dans Symfony
-        $container->setDefinition(WialonClient::class, $definition);
-
-        // Créer un alias "wialon" (optionnel mais pratique)
+        $clientDef->setPublic(true);
+        $clientDef->setAutowired(true);
+        $container->setDefinition(WialonClient::class, $clientDef);
         $container->setAlias('wialon', WialonClient::class);
+       
+        $commandDef = new Definition(WialonCheckCommand::class);
+        $commandDef->setAutowired(true);      // Pour qu'il injecte WialonClient tout seul
+        $commandDef->setAutoconfigured(true); // Pour qu'il lise l'attribut #[AsCommand]
+        $commandDef->addTag('console.command'); // Pour dire à Symfony "C'est une commande !"
+        
+        $container->setDefinition(WialonCheckCommand::class, $commandDef);
     }
 }
