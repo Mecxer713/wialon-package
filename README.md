@@ -1,6 +1,6 @@
 ﻿# Wialon SDK for Laravel & Symfony
 
-> A production-ready, framework-agnostic SDK with native integrations for Laravel and Symfony.
+> 🚀 A **developer-first**, production-ready SDK to integrate the **Wialon (Gurtam) API** into Laravel & Symfony — with zero-auth pain, zero-SSL pain, and a clean architecture you’ll actually enjoy using.
 
 ---
 
@@ -11,8 +11,6 @@
   - [Overview](#overview)
   - [✨ Key Highlights](#-key-highlights)
   - [📦 Package Identity](#-package-identity)
-  - [🏗 Architecture Overview](#-architecture-overview)
-    - [1️⃣ Core Layer (Framework-Agnostic)](#1️⃣-core-layer-framework-agnostic)
     - [2️⃣ Laravel Integration Layer](#2️⃣-laravel-integration-layer)
     - [3️⃣ Symfony Integration Layer](#3️⃣-symfony-integration-layer)
   - [📥 Installation](#-installation)
@@ -36,9 +34,16 @@
 
 ## Overview
 
-**Wialon SDK for Laravel & Symfony** is a hybrid PHP SDK designed to integrate the **Wialon (Gurtam) API** into modern PHP applications.
+**Wialon SDK for Laravel & Symfony** is a modern, open-source PHP SDK designed to make Wialon API integration **simple, reliable, and enjoyable**.
 
-It provides a **clean PHP core** with **first-class framework integrations**, focusing on reliability, developer experience, and real-world production constraints (authentication & SSL issues).
+It abstracts away the two biggest pain points developers face when working with Wialon:
+
+* 🔐 **Session management (SID)** — handled automatically, transparently, and safely
+* 🔒 **SSL & cURL certificate errors** — fixed out of the box, even on Windows
+
+Built around a **pure PHP core** and wrapped with **native Laravel & Symfony integrations**, this package lets you focus on business logic instead of boilerplate, edge cases, and environment issues.
+
+Whether you are building a **fleet management system**, an **internal dashboard**, or a **production SaaS**, this SDK is designed to scale with confidence.
 
 ---
 
@@ -71,25 +76,6 @@ It provides a **clean PHP core** with **first-class framework integrations**, fo
 
 ---
 
-## 🏗 Architecture Overview
-
-This SDK follows a clean layered architecture.
-
-### 1️⃣ Core Layer (Framework-Agnostic)
-
-📄 `src/WialonClient.php`
-
-Responsibilities:
-
-* HTTP communication with Wialon API (via Guzzle)
-* Automatic login & session (`sid`) renewal
-* Unified GET / POST handling
-* SSL certificate resolution (cURL 60 / 77)
-
-➡️ This layer contains **all business logic** and has **no framework dependency**.
-
----
-
 ### 2️⃣ Laravel Integration Layer
 
 Designed to feel 100% native to Laravel developers.
@@ -113,9 +99,6 @@ Components:
 * `DependencyInjection/WialonExtension.php` – service injection
 * `DependencyInjection/Configuration.php` – YAML config validation
 * `Commands/WialonCheckCommand.php` – Console diagnostic command
-
-
-
 
 ---
 
